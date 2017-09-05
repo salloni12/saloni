@@ -1,0 +1,50 @@
+#import nltk.classify.util
+from nltk.classify import NaiveBayesClassifier
+#from nltk.corpus import names
+ 
+
+#We start by defining 3 classes: positive, negative and neutral.
+#Each of these is defined by a vocabulary:
+positive_vocab = [ 'awesome', 'outstanding', 'fantastic', 'terrific', 'good', 'nice', 'great', ':)','liked']
+negative_vocab = [ 'bad', 'terrible','useless', 'hate', ':(' ]
+neutral_vocab = [ 'movie','the','sound','was','is','actors','did','know','words','not' ]
+
+
+#Every word is converted into a feature using a simplified bag of words model
+def word_feats(words):
+    return dict([(word, True) for word in words]) 
+positive_features = [(word_feats(pos), 'pos') for pos in positive_vocab]
+negative_features = [(word_feats(neg), 'neg') for neg in negative_vocab]
+neutral_features = [(word_feats(neu), 'neu') for neu in neutral_vocab]
+
+ 
+
+#Our training set is then the sum of these three feature sets:
+train_set = negative_features + positive_features + neutral_features
+ 
+#We train the classifier:
+    
+classifier = NaiveBayesClassifier.train(train_set) 
+#print(train_set)
+#And make predictions.
+# Predict
+neg = 0
+pos = 0
+neu = 0
+sentence = "Awesome movie , I liked it"
+sentence = sentence.lower()
+words = sentence.split(' ')
+for word in words:
+    classResult = classifier.classify(word_feats(word))
+    print(word +" "+classResult) 
+    if classResult == 'neg':
+        neg = neg + 1
+    if classResult == 'pos':
+        pos = pos + 1
+    if classResult == 'neu':
+        neu = neu + 1
+
+
+print('Positive: ' + str(float(pos)/len(words)))
+print('Negative: ' + str(float(neg)/len(words)))
+print('Neutral: ' + str(float(neu)/len(words)))
